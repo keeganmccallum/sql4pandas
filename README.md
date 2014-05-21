@@ -32,7 +32,7 @@ Efficient SQL bindings for the pandas data analysis library
 
     >>> import pandas as pd
     >>> import numpy as np
-    >>> import PDSQL
+    >>> from PDSQL import PDSQL
     
     >>> tbl1 = pd.DataFrame(np.random.randn(1000, 5) * 50,
                         columns=['a', 'b', 'c', 'd', 'e'])
