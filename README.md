@@ -1,7 +1,8 @@
 pdsql
 =====
 
-Efficient SQL bindings for the pandas data analysis library
+Efficient SQL bindings for the pandas data analysis library. Compile and execute sql queries directly on pandas data frames without copying to an external database.
+
 
 # Capabilities
 
