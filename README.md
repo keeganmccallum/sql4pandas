@@ -1,7 +1,7 @@
 pdsql
 =====
 
-Efficient SQL bindings for the pandas data analysis library. Compile and execute sql queries directly on pandas data frames without copying to an external database.
+Efficient SQL bindings for the pandas data analysis library. Compile and execute sql queries directly on pandas data frames without copying to an external database. Written in pure python (no C extensions), but as it operates directly on pandas dataframes and uses numexpr for further optimizations, is quite efficient compared to other pandas sql modules.
 
 
 # Capabilities
@@ -28,6 +28,7 @@ Efficient SQL bindings for the pandas data analysis library. Compile and execute
 - numpy 1.8.0+
 - numexpr
 - sqlparse(slightly modified to simplify parsing logic for our use case, custom version included)
+- Tested on Python 2.7.x (untested but should work with Python 3+)
 
 # EXAMPLES
 
