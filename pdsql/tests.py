@@ -1,6 +1,7 @@
-from PDSQL import PDSQL
+from pdsql import PDSQL
 import pandas as pd
 import numpy as np
+import pdb
 
 if __name__ == "__main__":
 
@@ -11,6 +12,22 @@ if __name__ == "__main__":
 
     panel = {'tbl1': tbl1, 'tbl2': tbl2}
     crs = PDSQL(panel)
+
+    crs.execute("""SELECT
+                    CASE
+                        WHEN tbl.a < 5
+                        THEN tbl2.e
+                        ELSE tbl.a
+                    END as case1, tbl2.b as randomness
+                    FROM (SELECT tbl1.a, tbl1.b
+                          FROM tbl1
+                          WHERE tbl1.a > 5) tbl
+                        LEFT JOIN (SELECT tbl2.a, tbl2.e, tbl2.b
+                            FROM tbl2
+                            WHERE tbl2.a < 5) tbl2
+                            ON tbl.b = tbl2.b""")
+    print crs.fetchall()
+
     crs.execute("""SELECT tbl2.a, tbl1.b
                    FROM tbl2
                        LEFT JOIN tbl1
@@ -81,3 +98,4 @@ if __name__ == "__main__":
         print test()
     else:
         print test()
+    pdb.set_trace()
