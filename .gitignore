@@ -1,3 +1,4 @@
 *.py[ocd]
 build
 dist
+Thumbs.db
