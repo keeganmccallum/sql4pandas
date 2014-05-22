@@ -22,6 +22,7 @@ Efficient SQL bindings for the pandas data analysis library. Compile and execute
 - other statement types such as UPDATE, INSERT, DELETE, SELECT INTO etc
 - '?' templating
 - performance optimizations
+- Syntax checking, validation and explicit error handling for sql errors
  
 # DEPENDENCIES
 - pandas 13.0+
