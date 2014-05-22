@@ -24,7 +24,7 @@ Efficient SQL bindings for the pandas data analysis library
  
 # DEPENDENCIES
 - pandas 13.0+
-- numpy 18.0+
+- numpy 1.8.0+
 - numexpr
 - sqlparse(slightly modified to simplify parsing logic for our use case, custom version included)
 
