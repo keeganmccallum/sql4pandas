@@ -299,7 +299,7 @@ class PDParser(object):
                         sections[tkns[start].ttype](tkns[start:i])
                     # start next category of statement
                     start = i
-                    curr_sect = token.value
+                    curr_sect = token.value.upper()
 
             # add in last section
             _parsed[curr_sect] = sections[tkns[start].ttype](tkns[start:])

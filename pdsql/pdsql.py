@@ -78,7 +78,7 @@ class PDSQL(object):
                 self._curr_val[as_name] = col
 
             def _select(identifiers):
-                if identifiers is None:
+                if len(identifiers) == 0:
                     return
                 # first setup any aliases
                 [_alias(alias, *val) for alias, val in self.aliases.iteritems()]
