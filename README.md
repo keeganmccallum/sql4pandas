@@ -1,4 +1,4 @@
-PDSQL
+pdsql
 =====
 
 Efficient SQL bindings for the pandas data analysis library
@@ -32,7 +32,7 @@ Efficient SQL bindings for the pandas data analysis library
 
     >>> import pandas as pd
     >>> import numpy as np
-    >>> from PDSQL import PDSQL
+    >>> from pdsql import PDSQL
     
     >>> tbl1 = pd.DataFrame(np.random.randn(1000, 5) * 50,
                         columns=['a', 'b', 'c', 'd', 'e'])
