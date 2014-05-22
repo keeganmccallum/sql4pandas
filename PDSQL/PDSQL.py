@@ -1,7 +1,5 @@
-import pandas as pd
-import numpy as np
 import numexpr as ne
-from PDParser import PDParser
+from pdparser import PDParser
 
 
 class PDSQL(object):

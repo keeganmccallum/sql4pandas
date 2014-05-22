@@ -1,2 +1,2 @@
-from PDSQL import PDSQL
+from pdsql import PDSQL
 __all__ = [PDSQL]
