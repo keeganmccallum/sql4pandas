@@ -7,12 +7,6 @@ class PDSQL(object):
     def __init__(self, dfs):
         self.db = dfs
         self._curr_val = None
-        self._groupby = None
-        self.cases = {}
-        self.fns = {}
-        self.joins = []
-        self.aliases = {}
-        self.temp_tables = []
 
     def execute(self, statement, *args, **kwargs):
 
@@ -81,7 +75,7 @@ class PDSQL(object):
                 if len(identifiers) == 0:
                     return
                 # first setup any aliases
-                [_alias(alias, *val) for alias, val in self.aliases.iteritems()]
+                [_alias(alias, *val) for alias, val in aliases.iteritems()]
                 ids = []
                 for col, fn in identifiers:
                     if fn is None:
@@ -98,8 +92,8 @@ class PDSQL(object):
                 # add identifier for table to column names
                 self._curr_val.columns = \
                     [identifier + '.' + col for col in self._curr_val.columns]
-                if len(self.joins) > 0:
-                    [_join(*j) for j in self.joins]
+                if len(joins) > 0:
+                    [_join(*j) for j in joins]
 
             def _join(right, how, left_on, right_on, right_identifier):
                 right = self.db[right].copy()
@@ -117,17 +111,22 @@ class PDSQL(object):
                 index = ne.evaluate(ev_str, id_dict(identifiers))
                 self._curr_val = self._curr_val[index]
 
-            def _apply_functions(fns):
+            def _apply_functions(funs, groupby=None):
                 # TODO: to implement error handling to notify user when
                 # selected attribute not in aggregate function but groupby
                 # applied
-                if self._groupby is not None:
-                    self._curr_val = self._groupby.agg(fns).reset_index()
+                if groupby is None:
+                    # create a fake column which holds only one value, so
+                    # group will aggregate entire columns into one group
+                    fake_column = '####fake'
+                    self._curr_val[fake_column] = 0
+                    groupby = self._curr_val.groupby(fake_column)
+                self._curr_val = groupby.agg(funs).reset_index()
 
             def _group(group_by):
-                self._groupby = self._curr_val.groupby(group_by)
-                if self.fns is not None:
-                    _apply_functions(self.fns)
+                groupby = self._curr_val.groupby(group_by)
+                if fns is not None:
+                    _apply_functions(fns, groupby)
 
             def _order(identifiers):
                 self._curr_val.sort(identifiers, inplace=True)
@@ -139,6 +138,7 @@ class PDSQL(object):
             # dictionary to store functions and arguments to functions
             # needed to execute in proper SQL order of operations
             _exec = {}
+            temp_tables = []
 
             for k, v in parsed.iteritems():
                 if k == 'NESTED_QUERIES':
@@ -147,11 +147,11 @@ class PDSQL(object):
                         self.db[ident] = self.fetchall()
                         self.db[ident].columns = \
                             [col.split('.')[1] for col in self.db[ident].columns]
-                        self.temp_tables.append(ident)
+                        temp_tables.append(ident)
                 elif k in sections.keys():
                     _exec[k] = sections[k], v
 
-            self.fns, self.joins, self.aliases, self.cases = \
+            fns, joins, aliases, cases = \
                 [parsed.get(x, [] if x == 'JOINS' else {})
                  for x in 'FUNCTIONS', 'JOINS', 'ALIASES', 'CASES']
 
@@ -159,21 +159,25 @@ class PDSQL(object):
             # for our use case as we may need to sort by a column before it is
             # filtered out in SELECT statement
             for keyword in 'FROM', 'WHERE', 'GROUP', 'ORDER', 'SELECT':
-                cases = self.cases.get(keyword, [])
-                if len(cases) > 0:
+                _cases = cases.get(keyword, [])
+                if len(_cases) > 0:
                     # setup any case statements at the correct part of evaluation
-                    [_case(case) for case in cases]
+                    [_case(case) for case in _cases]
                 fn, args = _exec.get(keyword, (None, None))
                 if fn is not None:
                     fn(args)
+                elif keyword == 'GROUP' and len(fns) > 0:
+                    # we need to do any aggregating at this point in the query,
+                    # even if not grouping
+                    _apply_functions(fns)
+
+            # clearout any temporary tables before next statement is executed
+            for x in temp_tables:
+                del self.db[x]
 
         parser = PDParser()
         _execute(parser.parse_statement(statement))
 
-        # clearout any temporary tables before next statement is executed
-        for x in self.temp_tables:
-            del self.db[x]
-        self.temp_tables = []
 
     def fetchall(self):
         return self._curr_val
