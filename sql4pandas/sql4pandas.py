@@ -1,8 +1,8 @@
 import numexpr as ne
-from pdparser import PDParser
+from sqlparser import SQLParser
 
 
-class PDSQL(object):
+class PandasCursor (object):
     """takes a dictionary of pandas dataframes as an argument"""
     def __init__(self, dfs):
         self.db = dfs
@@ -175,9 +175,8 @@ class PDSQL(object):
             for x in temp_tables:
                 del self.db[x]
 
-        parser = PDParser()
+        parser = SQLParser()
         _execute(parser.parse_statement(statement))
-
 
     def fetchall(self):
         return self._curr_val

@@ -1,5 +1,5 @@
 from distutils.core import setup
-setup(name='pdsql',
+setup(name='sql4pandas',
       version='0.0.1',
-      packages=['pdsql', 'sqlparse_mod']
+      packages=['sql4pandas', 'sqlparse_mod']
       )

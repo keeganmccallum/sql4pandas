@@ -1,4 +1,4 @@
-pdsql
+sql4pandas
 =====
 
 Efficient SQL bindings for the pandas data analysis library. Compile and execute sql queries directly on pandas data frames without copying to an external database. Written in pure python (no C extensions), but as it operates directly on pandas dataframes and uses numexpr for further optimizations, is quite efficient compared to other pandas sql modules.
@@ -23,7 +23,7 @@ Efficient SQL bindings for the pandas data analysis library. Compile and execute
 - '?' templating
 - performance optimizations
 - Syntax checking, validation and explicit error handling for sql errors
- 
+
 # DEPENDENCIES
 - pandas 13.0+
 - numpy 1.8.0+
@@ -35,12 +35,12 @@ Efficient SQL bindings for the pandas data analysis library. Compile and execute
 
     >>> import pandas as pd
     >>> import numpy as np
-    >>> from pdsql import PDSQL
-    
+    >>> from sql4pandas import PandasCursor
+
     >>> tbl1 = pd.DataFrame(np.random.randn(1000, 5) * 50,
                         columns=['a', 'b', 'c', 'd', 'e'])
     >>> tbl2 = tbl1.copy()
-    >>> crs = PDSQL({'tbl1': tbl1, 'tbl2': tbl2})
+    >>> crs = PandasCursor({'tbl1': tbl1, 'tbl2': tbl2})
     >>> crs.execute("""SELECT
             CASE
                 WHEN SUM(tbl1.e) > 0
@@ -62,9 +62,9 @@ Efficient SQL bindings for the pandas data analysis library. Compile and execute
            GROUP BY tbl1.a, tbl2.b
            ORDER BY SUM(tbl1.d)""")
       >>> crs.fetchall()
-      
+
                rand       crazy         min
-      
+
       87    13.980633  -39.880526  -39.880526
       103   23.435746  -18.989008  -18.989008
       166   40.677965  -47.603296  -40.139092
@@ -80,6 +80,6 @@ Efficient SQL bindings for the pandas data analysis library. Compile and execute
       274  132.999115  -88.597205  -88.597205
       122   28.638471  -91.373880  -50.638201
                   ...         ...         ...
-                  
+
       [277 rows x 3 columns]
-                   
+

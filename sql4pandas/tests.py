@@ -1,4 +1,4 @@
-from pdsql import PDSQL
+from sql4pandas import PandasCursor
 import pandas as pd
 import numpy as np
 import pdb
@@ -10,9 +10,11 @@ if __name__ == "__main__":
     tbl2 = tbl1.copy()
     # tbl2 *= 0.7
 
-    panel = {'tbl1': tbl1, 'tbl2': tbl2}
-    crs = PDSQL(panel)
+    db = {'tbl1': tbl1, 'tbl2': tbl2}
+    crs = PandasCursor(db)
 
+    crs.execute("""SELECT SUM(tbl1.e) FROM tbl1""")
+    print crs.fetchall()
     crs.execute("""SELECT
                     CASE
                         WHEN tbl.a < 5

@@ -1,7 +1,7 @@
 from sqlparse_mod import parse, tokens
 
 
-class PDParser(object):
+class SQLParser(object):
     """class used to parse sql statements into a data structure
     which can be used to execute the statement"""
 
@@ -15,8 +15,16 @@ class PDParser(object):
             joins = []
             aliases = {}
             cases = {}
+            ops = {}
             self.case_num = 0
             nested_queries = {}
+
+            # some helpers for determining a token's attributes when it isn't
+            # completely straight forward
+            is_identifier = lambda token: token._get_repr_name() == 'Identifier'
+            is_case = lambda token: token._get_repr_name() == 'Case'
+            is_function = lambda token: token._get_repr_name() == 'Function'
+            is_comparison = lambda token: token._get_repr_name() == 'Comparison'
 
             def strip_tkns(tkns, punctuation=None):
                 """convenience function to remove whitespace tokens and comments
@@ -44,32 +52,41 @@ class PDParser(object):
             def col_identifier(token):
                 tkns = token.tokens
                 # strip whitespace and punctuation
-                tkns = strip_tkns(tkns, punctuation=True)
+                tkns = strip_tkns(tkns)
                 if len(tkns) == 1:
                     identifier = tkns[0].value
                     # handle issue of ambigous column names through aliasing
                     # for now, may be able to find a more efficient way in future
                     aliases[identifier] = None, None
                     return identifier, None
-                elif len(tkns) == 3 and tkns[1].value.upper() == 'AS':
+
+                # find the index of 'AS' in tkns
+                as_idx = next((i for i, t in enumerate(tkns)
+                               if t.value.upper() == 'AS'), None)
+                if as_idx is None:
+                    return tkns[0].value + '.' + tkns[-1].value, None
+
+                as_name = tkns[as_idx+1].value
+                tkns = tkns[:as_idx]
+                if len(tkns) == 1:
                     # handle aliasing
-                    as_name = tkns[-1].value
-                    if tkns[0]._get_repr_name() == 'Case':
+                    if is_case(tkns[0]):
                         return parse_case(tkns[0].tokens, as_name=as_name)
-                    elif tkns[0]._get_repr_name() == 'Identifier':
+                    elif is_identifier(tkns[0]):
                         aliases[as_name] = col_identifier(tkns[0]), None
-                    elif tkns[0]._get_repr_name() == 'Function':
+                    elif is_function(tkns[0]):
                         col, fn = sql_function(tkns[0])
                         aliases[as_name] = col, fn
                     return as_name, None
-                elif len(tkns) == 4 and tkns[2].value.upper() == 'AS':
+
+                op_idx = next((i for i, t in enumerate(tkns)
+                               if t.ttype == tokens.Operator), None)
+                if op_idx is None:
                     # handle aliasing for special case where parser doesn't group
                     # identifier properly
-                    as_name = tkns[-1].value
-                    aliases[as_name] = tkns[0].value + "." + tkns[1].value, None
+                    aliases[as_name] = tkns[0].value + "." + tkns[-1].value, None
                     return as_name, None
-                else:
-                    return tkns[0].value + '.' + tkns[-1].value, None
+                return operation(tkns, as_name)
 
             def sql_function(token):
                 tkns = token.tokens
@@ -82,28 +99,28 @@ class PDParser(object):
             def identifier_list(token):
                 """used to parse sql identifiers into actual
                 table/column groupings"""
-                if token._get_repr_name() == 'Identifier':
+                if is_identifier(token):
                     return col_identifier(token)
 
-                if token._get_repr_name() == 'Function':
+                if is_function(token):
                     return [sql_function(token)]
 
-                if token._get_repr_name() == 'Case':
+                if is_case(token):
                     return parse_case(token)
 
                 tkns = token.tokens
                 if len(tkns) == 1:
-                    if tkns[0]._get_repr_name() == 'Function':
+                    if is_function(tkns[0]):
                         return sql_function(tkns[0])
                     return col_identifier(token)
                 proc = []
                 # filter whitespace and punctuation
                 for tkn in tkns:
-                    if token._get_repr_name() == 'Identifier':
+                    if is_identifier(tkn):
                         proc.append(col_identifier(tkn))
-                    elif tkn._get_repr_name() == 'Case':
+                    elif is_case(tkn):
                         proc.append(parse_case(tkn.tokens))
-                    elif tkn._get_repr_name() == 'Function':
+                    elif is_function(tkn):
                         col, fn = sql_function(tkn)
                         proc.append((col, fn))
                     elif not tkn.is_whitespace() \
@@ -112,10 +129,40 @@ class PDParser(object):
 
                 return proc
 
-            def operation(tkns):
+            def operation(tkns, as_name=None):
                 """perform arithmetic operations"""
+                # identifiers used in comparision, needed to work around issue
+                # #83
+                raise NotImplementedError("Aritmetic Operations not yet supported")
+                # identifiers = {}
 
-                pass
+                # def get_str(token):
+                #     # import pdb; pdb.set_trace()
+                #     if is_function(token):
+                #         col, fn = sql_function(col)
+                #         col_str = (col+'_'+fn).replace('.', '_')
+                #         identifiers[col_str] = col, fn
+                #     elif token.is_group():
+                #         col = col_identifier(col)[0]
+                #         col_str = col.replace('.', '_')
+                #         identifiers[col_str] = col, None
+                #     else:
+                #         return token.value
+                #     return col_str
+
+                # expr = "".join(map(get_str, tkns))
+                # import pdb; pdb.set_trace()
+
+                # # give auto-genereted name if no alias specified
+                # if as_name is None:
+                #     as_name = 'case' + str(self.case_num)
+                # op = {'as_name': as_name,
+                #       'expr': (expr, identifiers)}
+
+                # _ops = ops.get(curr_sect, [])
+                # _ops.append(op)
+                # ops[curr_sect] = _ops
+                # return as_name, None
 
             def comparison(comps, operators=None):
                 # identifiers used in comparision, needed to work around issue #83
@@ -131,7 +178,7 @@ class PDParser(object):
                     assert len(comp) == 3
                     col, comp, val = comp
                     comp = comp_map.get(comp.value, comp.value)
-                    if col._get_repr_name() == 'Function':
+                    if is_function(col):
                         col, fn = sql_function(col)
                         col_str = (col+'_'+fn).replace('.', '_')
                         identifiers[col_str] = col, fn
@@ -153,7 +200,7 @@ class PDParser(object):
                 ev_str = comp_str(comp)
                 if operators is not None:
                     for comp, op in zip(comps[1:], operators):
-                        # build string to eventually evanluate
+                        # build string to eventually evaluate
                         if op == 'AND':
                             ev_str += " & " + comp_str(comp)
                         elif op == 'OR':
@@ -163,7 +210,7 @@ class PDParser(object):
 
             def parse_case(tkns, as_name=None):
                 def get_stmt(token):
-                    if token._get_repr_name() == 'Function':
+                    if is_function(token):
                         return sql_function(token)
                     else:
                         return col_identifier(token)
@@ -186,7 +233,7 @@ class PDParser(object):
                         case['else_stmt'] = get_stmt(token)
                     elif tkns[i-1].value == 'THEN':
                         stmt = get_stmt(token)
-                    elif token._get_repr_name() == 'Comparison':
+                    elif is_comparison(token):
                         if token.is_group():
                             cond = comparison([token.tokens])
                         else:
@@ -203,10 +250,9 @@ class PDParser(object):
                 identifiers = []
                 tkns = strip_tkns(tkns)
                 for i, token in enumerate(tkns):
-                    # import pdb; pdb.set_trace()
                     if token.ttype is tokens.Wildcard:
                         return
-                    elif token._get_repr_name() == 'Identifier':
+                    elif is_identifier(token):
                         identifiers = [col_identifier(token)]
                     elif token.is_group():
                         identifiers = identifier_list(token)
@@ -252,7 +298,7 @@ class PDParser(object):
                         nested_queries[right] = nested
                         # remove next token from list as it is already processed
                         del tkns[i+1]
-                    elif token._get_repr_name() == 'Comparison':
+                    elif is_comparison(token):
                         left_on = col_identifier(token.tokens[0])[0]
                         right_on = col_identifier(token.tokens[-1])[0]
                     elif token.is_group():
@@ -261,8 +307,7 @@ class PDParser(object):
 
             def parse_where(tkns):
                 # list of boolean indices to apply to current value
-                comps = [token.tokens for token in tkns
-                         if token._get_repr_name() == 'Comparison']
+                comps = [token.tokens for token in tkns if is_comparison(token)]
                 operators = [token.value for token in tkns
                              if token.value in ('AND', 'OR')]
                 return comparison(comps, operators)
