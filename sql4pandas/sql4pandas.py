@@ -51,6 +51,12 @@ class PandasCursor (object):
                 else:
                     return self._curr_val[col]
 
+            def _operation(op):
+                as_name, expr = op['as_name'], op['expr']
+                ev_str, identifiers = expr
+                col = ne.evaluate(ev_str, id_dict(identifiers))
+                self._curr_val[as_name] = col
+
             def _case(case):
                 as_name, else_stmt, stmts = \
                     case['as_name'], case.get('else_stmt', None), case['stmts']
@@ -151,9 +157,9 @@ class PandasCursor (object):
                 elif k in sections.keys():
                     _exec[k] = sections[k], v
 
-            fns, joins, aliases, cases = \
+            fns, joins, aliases, cases, ops = \
                 [parsed.get(x, [] if x == 'JOINS' else {})
-                 for x in 'FUNCTIONS', 'JOINS', 'ALIASES', 'CASES']
+                 for x in 'FUNCTIONS', 'JOINS', 'ALIASES', 'CASES', 'OPS']
 
             # execute statement in proper SQL order. ORDER is set before SELECT
             # for our use case as we may need to sort by a column before it is
@@ -163,6 +169,10 @@ class PandasCursor (object):
                 if len(_cases) > 0:
                     # setup any case statements at the correct part of evaluation
                     [_case(case) for case in _cases]
+                _ops = ops.get(keyword, [])
+                if len(_ops) > 0:
+                    # setup any operations at the correct part of evaluation
+                    [_operation(op) for op in _ops]
                 fn, args = _exec.get(keyword, (None, None))
                 if fn is not None:
                     fn(args)
@@ -180,3 +190,8 @@ class PandasCursor (object):
 
     def fetchall(self):
         return self._curr_val
+
+    def fetch_dicts(self):
+        """convenience function to fetch objects as a list of dictionaries,
+        good for JSON apis"""
+        return self.fetchall().T.to_dict().values()

@@ -25,6 +25,8 @@ class SQLParser(object):
             is_case = lambda token: token._get_repr_name() == 'Case'
             is_function = lambda token: token._get_repr_name() == 'Function'
             is_comparison = lambda token: token._get_repr_name() == 'Comparison'
+            is_operator = lambda token: token.ttype == tokens.Operator \
+                or token.ttype == tokens.Wildcard
 
             def strip_tkns(tkns, punctuation=None):
                 """convenience function to remove whitespace tokens and comments
@@ -51,6 +53,7 @@ class SQLParser(object):
 
             def col_identifier(token):
                 tkns = token.tokens
+
                 # strip whitespace and punctuation
                 tkns = strip_tkns(tkns)
                 if len(tkns) == 1:
@@ -64,7 +67,11 @@ class SQLParser(object):
                 as_idx = next((i for i, t in enumerate(tkns)
                                if t.value.upper() == 'AS'), None)
                 if as_idx is None:
-                    return tkns[0].value + '.' + tkns[-1].value, None
+                    op_idx = next((i for i, t in enumerate(tkns)
+                                  if is_operator(t)), None)
+                    if op_idx is None:
+                        return tkns[0].value + '.' + tkns[-1].value, None
+                    return operation(tkns)
 
                 as_name = tkns[as_idx+1].value
                 tkns = tkns[:as_idx]
@@ -80,7 +87,7 @@ class SQLParser(object):
                     return as_name, None
 
                 op_idx = next((i for i, t in enumerate(tkns)
-                               if t.ttype == tokens.Operator), None)
+                               if is_operator(t)), None)
                 if op_idx is None:
                     # handle aliasing for special case where parser doesn't group
                     # identifier properly
@@ -132,37 +139,59 @@ class SQLParser(object):
             def operation(tkns, as_name=None):
                 """perform arithmetic operations"""
                 # identifiers used in comparision, needed to work around issue
-                # #83
-                raise NotImplementedError("Aritmetic Operations not yet supported")
-                # identifiers = {}
+                # #83 of numexpr
+                identifiers = {}
 
-                # def get_str(token):
-                #     # import pdb; pdb.set_trace()
-                #     if is_function(token):
-                #         col, fn = sql_function(col)
-                #         col_str = (col+'_'+fn).replace('.', '_')
-                #         identifiers[col_str] = col, fn
-                #     elif token.is_group():
-                #         col = col_identifier(col)[0]
-                #         col_str = col.replace('.', '_')
-                #         identifiers[col_str] = col, None
-                #     else:
-                #         return token.value
-                #     return col_str
+                if len(tkns) == 1:
+                    return col_identifier(tkns[0])
+                # get indicies in tkns where operators are
+                op_indices = [i for i, t in enumerate(tkns)
+                              if is_operator(t)]
+                # get operators
+                operators = [t.value for t in tkns
+                             if is_operator(t)]
+                # group other tokens around operators
+                ids = [tkns[:op_indices[0]]]
+                ids += [tkns[i1+1:i2] for i1, i2
+                        in zip(op_indices[:-1], op_indices[1:])]
+                ids += [tkns[op_indices[-1]+1:]]
 
-                # expr = "".join(map(get_str, tkns))
-                # import pdb; pdb.set_trace()
+                def get_id(_id):
+                    if len(_id) > 1:
+                        return ''.join([t.value for t in _id]), None
+                    token = _id[0]
+                    if token._get_repr_name() == 'Parenthesis':
+                        return operation(token.tokens[1:-1])
+                    if token._get_repr_name() == 'Integer':
+                        return token.value, None
+                    if is_function(token):
+                        return sql_function(token)
+                    elif token.is_group():
+                        return col_identifier(token)
 
-                # # give auto-genereted name if no alias specified
-                # if as_name is None:
-                #     as_name = 'case' + str(self.case_num)
-                # op = {'as_name': as_name,
-                #       'expr': (expr, identifiers)}
+                ids = map(get_id, ids)
+                cols = [(x if y is None else (x+'_'+y)).replace('.', '_')
+                        for x, y in ids]
+                for _id, col in zip(ids, cols):
+                    try:
+                        # only add non-numbers to column identifiers dict
+                        float(col)
+                    except:
+                        identifiers[col] = _id
+                expr = reduce(lambda x, (y, z): x+' '+y+' '+z,
+                              zip(operators, cols[1:]), cols[0])
 
-                # _ops = ops.get(curr_sect, [])
-                # _ops.append(op)
-                # ops[curr_sect] = _ops
-                # return as_name, None
+                # give auto-genereted name if no alias specified
+                if as_name is None:
+                    as_name = ''.join(cols)
+                op = {'as_name': as_name,
+                      'expr': (expr, identifiers)}
+
+                _ops = ops.get(curr_sect, [])
+                _ops.append(op)
+                ops[curr_sect] = _ops
+
+                return as_name, None
 
             def comparison(comps, operators=None):
                 # identifiers used in comparision, needed to work around issue #83
@@ -355,6 +384,7 @@ class SQLParser(object):
             _parsed['ALIASES'] = aliases
             _parsed['CASES'] = cases
             _parsed['NESTED_QUERIES'] = nested_queries
+            _parsed['OPS'] = ops
             return _parsed
 
         tkns = parse(statement)[0].tokens

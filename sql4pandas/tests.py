@@ -13,6 +13,16 @@ if __name__ == "__main__":
     db = {'tbl1': tbl1, 'tbl2': tbl2}
     crs = PandasCursor(db)
 
+    crs.execute("""SELECT SUM(tbl1.a), SUM(tbl1.b), SUM(tbl1.a) + SUM(tbl1.b)
+                   FROM tbl1""")
+    print crs.fetchall()
+    crs.execute("""SELECT tbl1.e, tbl1.b, tbl1.a, ((tbl1.e + tbl1.b) / tbl1.a) * 10 as eb, (tbl1.e + tbl1.b) / tbl1.a as ba
+                   FROM tbl1""")
+    print crs.fetchall()
+    crs.execute("""SELECT tbl1.e, tbl1.b, tbl1.e + tbl1.b as eb FROM tbl1""")
+    print crs.fetchall()
+    crs.execute("""SELECT tbl1.e, tbl1.b, tbl1.e + tbl1.b as eb FROM tbl1""")
+    print crs.fetchall()
     crs.execute("""SELECT SUM(tbl1.e) FROM tbl1""")
     print crs.fetchall()
     crs.execute("""SELECT
