@@ -12,7 +12,7 @@ Efficient SQL bindings for the pandas data analysis library. Compile and execute
 - CASE Statements
 - Basic functions(ie. SUM, MIN, MAX... works with almost any native pandas aggregate function)
 - Standard Comparators (ie. <, >, =, !=, <>), 'AND' and 'OR' to chain
-- Comparators efficiently implemented using numexpr, making them faster and more memory efficient than vanilla python
+- Comparators and arithmetic operations efficiently implemented using numexpr, making them faster and more memory efficient than vanilla python
 - aliasing for column names
 - nested queries
 - arithmetic operations(+, -, /, *...etc)
