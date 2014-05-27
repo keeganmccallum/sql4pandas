@@ -161,6 +161,9 @@ class SQLParser(object):
                         return ''.join([t.value for t in _id]), None
                     token = _id[0]
                     if token._get_repr_name() == 'Parenthesis':
+                        # TODO: instead of just leveraging parsing,
+                        # pass parenthesis into numexpr for performance
+                        # gains
                         return operation(token.tokens[1:-1])
                     if token._get_repr_name() == 'Integer':
                         return token.value, None

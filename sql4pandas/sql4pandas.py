@@ -118,9 +118,16 @@ class PandasCursor (object):
                 self._curr_val = self._curr_val[index]
 
             def _apply_functions(funs, groupby=None):
-                # TODO: to implement error handling to notify user when
-                # selected attribute not in aggregate function but groupby
-                # applied
+                # dictionary that provides a mechanism to override functions,
+                # functions are passed from SQL statment, in lowercase. set
+                # functions name(lowercase) as key and then specify the function
+                # to be run in on column
+                overrides = {
+                    # 'isnull': (lambda x: x) just an example for now
+                }
+                funs = {k: [overrides.get(fn, fn) for fn in v]
+                        for k, v in funs.iteritems()}
+
                 if groupby is None:
                     # create a fake column which holds only one value, so
                     # group will aggregate entire columns into one group
@@ -165,14 +172,14 @@ class PandasCursor (object):
             # for our use case as we may need to sort by a column before it is
             # filtered out in SELECT statement
             for keyword in 'FROM', 'WHERE', 'GROUP', 'ORDER', 'SELECT':
-                _cases = cases.get(keyword, [])
-                if len(_cases) > 0:
-                    # setup any case statements at the correct part of evaluation
-                    [_case(case) for case in _cases]
                 _ops = ops.get(keyword, [])
                 if len(_ops) > 0:
                     # setup any operations at the correct part of evaluation
                     [_operation(op) for op in _ops]
+                _cases = cases.get(keyword, [])
+                if len(_cases) > 0:
+                    # setup any case statements at the correct part of evaluation
+                    [_case(case) for case in _cases]
                 fn, args = _exec.get(keyword, (None, None))
                 if fn is not None:
                     fn(args)
