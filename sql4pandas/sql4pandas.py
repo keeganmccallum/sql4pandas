@@ -1,4 +1,4 @@
-import numexpr as ne
+import pandas as pd
 from sqlparser import SQLParser
 
 
@@ -54,7 +54,8 @@ class PandasCursor (object):
             def _operation(op):
                 as_name, expr = op['as_name'], op['expr']
                 ev_str, identifiers = expr
-                col = ne.evaluate(ev_str, id_dict(identifiers))
+                # col = ne.evaluate(ev_str, id_dict(identifiers))
+                col = pd.eval(ev_str, local_dict=id_dict(identifiers))
                 self._curr_val[as_name] = col
 
             def _case(case):
@@ -71,7 +72,9 @@ class PandasCursor (object):
                     col.loc[:] = None
 
                 for (ev_str, identifiers), stmt in stmts:
-                    idx = ne.evaluate(ev_str, id_dict(identifiers))
+                    print ev_str
+                    idx = pd.eval(ev_str, local_dict=id_dict(identifiers))
+                    # idx = ne.evaluate(ev_str, id_dict(identifiers))
                     val = _get_val(*stmt)
                     col[idx] = val[idx]
 
@@ -114,7 +117,8 @@ class PandasCursor (object):
 
             def _where(cond):
                 ev_str, identifiers = cond
-                index = ne.evaluate(ev_str, id_dict(identifiers))
+                index = pd.eval(ev_str, local_dict=id_dict(identifiers))
+                # index = ne.evaluate(ev_str, id_dict(identifiers))
                 self._curr_val = self._curr_val[index]
 
             def _apply_functions(funs, groupby=None):

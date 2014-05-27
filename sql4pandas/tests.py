@@ -1,27 +1,52 @@
 from sql4pandas import PandasCursor
 import pandas as pd
 import numpy as np
-import pdb
+import unittest
+
+
+# # unit tests
+# class Tests(unittest.TestCase):
+
+#     def testOne(self):
+#         self.failUnless(IsOdd(1))
+
+#     def testTwo(self):
+#         self.failIf(IsOdd(2))
+
+# if __name__ == '__main__':
+#     unittest.main()
 
 if __name__ == "__main__":
 
     tbl1 = pd.DataFrame(np.random.randn(1000, 5) * 50,
                         columns=['a', 'b', 'c', 'd', 'e'])
+    tbl1['f'] = 'five'
     tbl2 = tbl1.copy()
     # tbl2 *= 0.7
 
     db = {'tbl1': tbl1, 'tbl2': tbl2}
     crs = PandasCursor(db)
 
+    crs.execute(""" SELECT
+                        CASE
+                            WHEN tbl1.f = 'five'
+                            THEN tbl1.f
+                            ELSE tbl1.a
+                        END as case
+                    FROM tbl1
+          """)
+    print crs.fetchall()
     crs.execute("""SELECT SUM(tbl1.a), SUM(tbl1.b), SUM(tbl1.a) + SUM(tbl1.b)
                    FROM tbl1""")
     print crs.fetchall()
-    crs.execute("""SELECT tbl1.e, tbl1.b, tbl1.a, ((tbl1.e + tbl1.b) / tbl1.a) * 10 as eb, (tbl1.e + tbl1.b) / tbl1.a as ba
+    crs.execute("""SELECT
+                      tbl1.e, tbl1.b, tbl1.a,
+                      ((tbl1.e + tbl1.b) / tbl1.a) * 10 as eb,
+                      (tbl1.e + tbl1.b) / tbl1.a as ba
                    FROM tbl1""")
     print crs.fetchall()
-    crs.execute("""SELECT tbl1.e, tbl1.b, tbl1.e + tbl1.b as eb FROM tbl1""")
-    print crs.fetchall()
-    crs.execute("""SELECT tbl1.e, tbl1.b, tbl1.e + tbl1.b as eb FROM tbl1""")
+    crs.execute("""SELECT tbl1.e, tbl1.b, tbl1.e + tbl1.b as eb
+                   FROM tbl1""")
     print crs.fetchall()
     crs.execute("""SELECT SUM(tbl1.e) FROM tbl1""")
     print crs.fetchall()
@@ -110,4 +135,3 @@ if __name__ == "__main__":
         print test()
     else:
         print test()
-    pdb.set_trace()
