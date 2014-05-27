@@ -15,9 +15,9 @@ Efficient SQL bindings for the pandas data analysis library. Compile and execute
 - Comparators efficiently implemented using numexpr, making them faster and more memory efficient than vanilla python
 - aliasing for column names
 - nested queries
+- arithmetic operations(+, -, /, *...etc)
 
 # TODO (POC as of now)
-- arithmetic operations(+, -, /, *...etc)
 - more functions, such as ISNULL statements
 - other statement types such as UPDATE, INSERT, DELETE, SELECT INTO etc
 - '?' templating
