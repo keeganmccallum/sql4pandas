@@ -53,6 +53,9 @@ class SQLParser(object):
                         get_fns(tkn.tokens)
 
             def col_identifier(token):
+                if token.ttype in tokens.Literal:
+                    literals[token.value] = token.value
+                    return token.value, None
                 tkns = token.tokens
 
                 # strip whitespace and punctuation
@@ -60,7 +63,7 @@ class SQLParser(object):
                 if len(tkns) == 1:
                     identifier = tkns[0].value
                     if tkns[0].ttype in tokens.Literal:
-                        literals[identifier] = tkns[0].value
+                        literals[identifier] = identifier
                     # handle issue of ambigous column names through aliasing
                     # for now, may be able to find a more efficient way in future
                     aliases[identifier] = None, None

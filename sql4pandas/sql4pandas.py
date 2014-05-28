@@ -172,7 +172,6 @@ class PandasCursor (object):
             fns, joins, aliases, cases, ops = \
                 [parsed.get(x, [] if x == 'JOINS' else {})
                  for x in 'FUNCTIONS', 'JOINS', 'ALIASES', 'CASES', 'OPS']
-
             literals = parsed.get('LITERALS', {})
 
             # execute statement in proper SQL order. ORDER is set before SELECT
