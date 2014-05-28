@@ -54,7 +54,6 @@ class PandasCursor (object):
             def _operation(op):
                 as_name, expr = op['as_name'], op['expr']
                 ev_str, identifiers = expr
-                # col = ne.evaluate(ev_str, id_dict(identifiers))
                 col = pd.eval(ev_str, local_dict=id_dict(identifiers))
                 self._curr_val[as_name] = col
 
@@ -74,7 +73,6 @@ class PandasCursor (object):
                 for (ev_str, identifiers), stmt in stmts:
                     print ev_str
                     idx = pd.eval(ev_str, local_dict=id_dict(identifiers))
-                    # idx = ne.evaluate(ev_str, id_dict(identifiers))
                     val = _get_val(*stmt)
                     col[idx] = val[idx]
 
@@ -85,6 +83,10 @@ class PandasCursor (object):
                     return
                 # first setup any aliases
                 [_alias(alias, *val) for alias, val in aliases.iteritems()]
+                # setup literal columns specified in select statement
+                for identifier, value in literals.iteritems():
+                    self._curr_val[identifier] = value
+
                 ids = []
                 for col, fn in identifiers:
                     if fn is None:
@@ -118,7 +120,6 @@ class PandasCursor (object):
             def _where(cond):
                 ev_str, identifiers = cond
                 index = pd.eval(ev_str, local_dict=id_dict(identifiers))
-                # index = ne.evaluate(ev_str, id_dict(identifiers))
                 self._curr_val = self._curr_val[index]
 
             def _apply_functions(funs, groupby=None):
@@ -171,6 +172,8 @@ class PandasCursor (object):
             fns, joins, aliases, cases, ops = \
                 [parsed.get(x, [] if x == 'JOINS' else {})
                  for x in 'FUNCTIONS', 'JOINS', 'ALIASES', 'CASES', 'OPS']
+
+            literals = parsed.get('LITERALS', {})
 
             # execute statement in proper SQL order. ORDER is set before SELECT
             # for our use case as we may need to sort by a column before it is

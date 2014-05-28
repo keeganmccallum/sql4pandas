@@ -27,6 +27,10 @@ if __name__ == "__main__":
     db = {'tbl1': tbl1, 'tbl2': tbl2}
     crs = PandasCursor(db)
 
+
+    crs.execute("""SELECT 5 as five, 'test' as test, 5 + 5 as ten, tbl1.e as e from tbl1""")
+    print crs.fetchall()
+    raise ValueError
     crs.execute(""" SELECT
                         CASE
                             WHEN tbl1.f = 'five'

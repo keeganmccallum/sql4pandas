@@ -18,6 +18,7 @@ class SQLParser(object):
             ops = {}
             self.case_num = 0
             nested_queries = {}
+            literals = {}
 
             # some helpers for determining a token's attributes when it isn't
             # completely straight forward
@@ -58,6 +59,8 @@ class SQLParser(object):
                 tkns = strip_tkns(tkns)
                 if len(tkns) == 1:
                     identifier = tkns[0].value
+                    if tkns[0].ttype in tokens.Literal:
+                        literals[identifier] = tkns[0].value
                     # handle issue of ambigous column names through aliasing
                     # for now, may be able to find a more efficient way in future
                     aliases[identifier] = None, None
@@ -77,7 +80,10 @@ class SQLParser(object):
                 tkns = tkns[:as_idx]
                 if len(tkns) == 1:
                     # handle aliasing
-                    if is_case(tkns[0]):
+                    if tkns[0].ttype in tokens.Literal:
+                        literals[as_name] = tkns[0].value
+                        return as_name, None
+                    elif is_case(tkns[0]):
                         return parse_case(tkns[0].tokens, as_name=as_name)
                     elif is_identifier(tkns[0]):
                         aliases[as_name] = col_identifier(tkns[0]), None
@@ -388,6 +394,7 @@ class SQLParser(object):
             _parsed['CASES'] = cases
             _parsed['NESTED_QUERIES'] = nested_queries
             _parsed['OPS'] = ops
+            _parsed['LITERALS'] = literals
             return _parsed
 
         tkns = parse(statement)[0].tokens
