@@ -35,12 +35,13 @@ if __name__ == "__main__":
     crs.execute(""" SELECT
                         CASE
                             WHEN tbl1.f = 'five'
-                            THEN tbl1.f
+                            THEN 'test'
                             ELSE tbl1.a
                         END as case
                     FROM tbl1
           """)
     print crs.fetchall()
+    raise ValueError
     crs.execute("""SELECT SUM(tbl1.a), SUM(tbl1.b), SUM(tbl1.a) + SUM(tbl1.b)
                    FROM tbl1""")
     print crs.fetchall()

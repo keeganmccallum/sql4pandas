@@ -83,9 +83,6 @@ class PandasCursor (object):
                     return
                 # first setup any aliases
                 [_alias(alias, *val) for alias, val in aliases.iteritems()]
-                # setup literal columns specified in select statement
-                for identifier, value in literals.iteritems():
-                    self._curr_val[identifier] = value
 
                 ids = []
                 for col, fn in identifiers:
@@ -105,6 +102,9 @@ class PandasCursor (object):
                     [identifier + '.' + col for col in self._curr_val.columns]
                 if len(joins) > 0:
                     [_join(*j) for j in joins]
+                # setup literal columns specified in select statement
+                for identifier, value in literals.iteritems():
+                    self._curr_val[identifier] = value
 
             def _join(right, how, left_on, right_on, right_identifier):
                 right = self.db[right].copy()
