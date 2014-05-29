@@ -79,7 +79,7 @@ class PandasCursor (object):
                 self._curr_val[as_name] = col
 
             def _select(identifiers):
-                if len(identifiers) == 0:
+                if identifiers is None or len(identifiers) == 0:
                     return
                 # first setup any aliases
                 [_alias(alias, *val) for alias, val in aliases.iteritems()]
@@ -193,6 +193,11 @@ class PandasCursor (object):
                     # we need to do any aggregating at this point in the query,
                     # even if not grouping
                     _apply_functions(fns)
+
+            into = parsed.get('INTO', None)
+            if into is not None:
+                self.db[into] = self._curr_val
+                self._curr_val = None
 
             # clearout any temporary tables before next statement is executed
             for x in temp_tables:

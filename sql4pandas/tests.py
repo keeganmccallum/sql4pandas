@@ -27,6 +27,13 @@ if __name__ == "__main__":
     db = {'tbl1': tbl1, 'tbl2': tbl2}
     crs = PandasCursor(db)
 
+
+    crs.execute("""SELECT 5, 'testing', 5 + 5 as ten, tbl1.e as e
+                   INTO random_table
+                   from tbl1""")
+    print crs.fetchall()
+    crs.execute("""SELECT * FROM random_table""")
+    print crs.fetchall()
     crs.execute("""SELECT 5, 'test', 5 + 5 as ten, tbl1.e as e from tbl1""")
     print crs.fetchall()
     crs.execute("""SELECT 5 as five, 'test' as test, 5 + 5 as ten, tbl1.e as e
@@ -41,7 +48,6 @@ if __name__ == "__main__":
                     FROM tbl1
           """)
     print crs.fetchall()
-    raise ValueError
     crs.execute("""SELECT SUM(tbl1.a), SUM(tbl1.b), SUM(tbl1.a) + SUM(tbl1.b)
                    FROM tbl1""")
     print crs.fetchall()
@@ -55,7 +61,7 @@ if __name__ == "__main__":
                    FROM tbl1""")
     print crs.fetchall()
     crs.execute("""SELECT SUM(tbl1.e) FROM tbl1""")
-    print crs.fetchall()
+    # print crs.fetchall()
     crs.execute("""SELECT
                     CASE
                         WHEN tbl.a < 5
@@ -65,7 +71,8 @@ if __name__ == "__main__":
                     FROM (SELECT tbl1.a, tbl1.b
                           FROM tbl1
                           WHERE tbl1.a > 5) tbl
-                        LEFT JOIN (SELECT tbl2.a, tbl2.e, tbl2.b
+                        LEFT JOIN
+                        (SELECT tbl2.a, tbl2.e, tbl2.b
                             FROM tbl2
                             WHERE tbl2.a < 5) tbl2
                             ON tbl.b = tbl2.b""")

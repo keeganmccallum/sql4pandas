@@ -6,7 +6,7 @@ Efficient SQL bindings for the pandas data analysis library. Compile and execute
 
 # Capabilities
 
-## SELECT Statements:
+## SELECT/SELECT INTO Statements:
 - FROM, WHERE, GROUP BY, ORDER BY Clauses
 - LEFT, INNER, RIGHT and OUTER JOINS
 - CASE Statements
@@ -19,7 +19,7 @@ Efficient SQL bindings for the pandas data analysis library. Compile and execute
 
 # TODO (POC as of now)
 - more functions, such as ISNULL statements
-- other statement types such as UPDATE, INSERT, DELETE, SELECT INTO etc
+- other statement types such as UPDATE, INSERT, DELETE etc
 - '?' templating
 - performance optimizations
 - Syntax checking, validation and explicit error handling for sql errors
@@ -28,7 +28,7 @@ Efficient SQL bindings for the pandas data analysis library. Compile and execute
 - pandas 13.0+
 - numpy 1.8.0+
 - numexpr
-- sqlparse(slightly modified to simplify parsing logic for our use case, custom version included)
+- sqlparse 0.1.1+
 - Tested on Python 2.7.x (untested but should work with Python 3+)
 
 # EXAMPLES

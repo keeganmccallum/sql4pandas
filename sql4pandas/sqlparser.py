@@ -1,4 +1,4 @@
-from sqlparse_mod import parse, tokens
+from sqlparse import parse, tokens
 
 
 class SQLParser(object):
@@ -299,6 +299,11 @@ class SQLParser(object):
                         identifiers = identifier_list(token)
                 return identifiers
 
+            def parse_into(tkns):
+                for token in tkns:
+                    if is_identifier(token):
+                        return token.value
+
             def tbl_identifier(tkns):
                 """returns identifier as tuple of
                 tablename, identifier"""
@@ -365,11 +370,12 @@ class SQLParser(object):
                         identifiers = identifier_list(token)
                 return identifiers
 
-            sections = {tokens.Keyword.SELECT: parse_select,
-                        tokens.Keyword.FROM: parse_from,
-                        tokens.Keyword.WHERE: parse_where,
-                        tokens.Keyword.GROUP: parse_group,
-                        tokens.Keyword.ORDER: parse_order}
+            sections = {'SELECT': parse_select,
+                        'INTO': parse_into,
+                        'FROM': parse_from,
+                        'WHERE': parse_where,
+                        'GROUP': parse_group,
+                        'ORDER': parse_order}
 
             # remove whitespace from tokens
             tkns = strip_tkns(tkns)
@@ -378,17 +384,25 @@ class SQLParser(object):
             for i, token in enumerate(tkns):
                 if i == 0:
                     start = 0
-                    curr_sect = token.value
+                    curr_sect = token.value.upper()
                     continue
-                if token.ttype in sections.keys():
-                    _parsed[curr_sect] = \
-                        sections[tkns[start].ttype](tkns[start:i])
+                if token._get_repr_name().upper() == 'WHERE':
+                    _parsed[curr_sect] = sections[curr_sect](tkns[start:i])
+                    # start next category of statement
+                    curr_sect = 'WHERE'
+                    _parsed['WHERE'] = sections['WHERE'](token.tokens)
+                    continue
+                if token.value.upper() in sections.keys() \
+                        and token.ttype in tokens.Keyword:
+                    if curr_sect != 'WHERE':
+                        _parsed[curr_sect] = sections[curr_sect](tkns[start:i])
                     # start next category of statement
                     start = i
                     curr_sect = token.value.upper()
 
             # add in last section
-            _parsed[curr_sect] = sections[tkns[start].ttype](tkns[start:])
+            if curr_sect != 'WHERE':
+                _parsed[curr_sect] = sections[curr_sect](tkns[start:])
 
             get_fns(tkns)
             _parsed['FUNCTIONS'] = fns
