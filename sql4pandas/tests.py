@@ -21,7 +21,7 @@ if __name__ == "__main__":
     tbl1 = pd.DataFrame(np.random.randn(1000, 5) * 50,
                         columns=['a', 'b', 'c', 'd', 'e'])
     tbl1['f'] = 'five'
-    tbl2 = tbl1.copy()
+    l2 = tbl1.copy()
     # tbl2 *= 0.7
 
     db = {'tbl1': tbl1, 'tbl2': tbl2}

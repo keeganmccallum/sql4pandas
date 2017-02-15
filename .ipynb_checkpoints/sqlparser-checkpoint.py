@@ -33,9 +33,9 @@ class SQLParser(object):
                 """convenience function to remove whitespace tokens and comments
                 from list, optionally also remove punctuation"""
                 if punctuation is None:
-                    return [token for token in tkns if not token.is_whitespace
+                    return [token for tokenn tkns if not token.is_whitespace()
                             and token._get_repr_name() != 'Comment']
-                return [token for tok in tkns if not token.is_whitespace
+                return [token for tok in tkns if not token.is_whitespace()
                         and token._get_repr_name() != 'Comment'
                         and token.ttype != tokens.Token.Punctuation]
 
@@ -49,7 +49,7 @@ class SQLParser(object):
                         if fn not in _fns:
                             _fns.append(fn)
                         fns[col] = _fns
-                    elif tkn.is_group:
+                    elif tkn.is_group():
                         get_fns(tkn.tokens)
 
             def col_identifier(token):
@@ -139,7 +139,7 @@ class SQLParser(object):
                     elif is_function(tkn):
                         col, fn = sql_function(tkn)
                         proc.append((col, fn))
-                    elif not tkn.is_whitespace \
+                    elif not tkn.is_whitespace() \
                             and tkn.ttype != tokens.Punctuation:
                         proc.append(col_identifier(tkn))
 
@@ -178,7 +178,7 @@ class SQLParser(object):
                         return token.value, None
                     if is_function(token):
                         return sql_function(token)
-                    elif token.is_group:
+                    elif token.is_group():
                         return col_identifier(token)
 
                 ids = map(get_id, ids)
@@ -223,11 +223,11 @@ class SQLParser(object):
                         col, fn = sql_function(col)
                         col_str = (col+'_'+fn).replace('.', '_')
                         identifiers[col_str] = col, fn
-                    elif col.is_group:
+                    elif col.is_group():
                         col = col_identifier(col)[0]
                         col_str = col.replace('.', '_')
                         identifiers[col_str] = col, None
-                    if val.is_group:
+                    if val.is_group():
                         val = col_identifier(val)[0]
                         identifiers[val.replace('.', '_')] = val, None
                     else:
@@ -275,7 +275,7 @@ class SQLParser(object):
                     elif tkns[i-1].value == 'THEN':
                         stmt = get_stmt(token)
                     elif is_comparison(token):
-                        if token.is_group:
+                        if token.is_group():
                             cond = comparison([token.tokens])
                         else:
                             cond = comparison([[tkns[i-1], token,
@@ -295,7 +295,7 @@ class SQLParser(object):
                         return
                     elif is_identifier(token):
                         identifiers = [col_identifier(token)]
-                    elif token.is_group:
+                    elif token.is_group():
                         identifiers = identifier_list(token)
                 return identifiers
 
@@ -321,7 +321,7 @@ class SQLParser(object):
                         nested_queries[table] = nested
                         # remove next token from list as it is already processed
                         del tkns[i+1]
-                    elif token.is_group:
+                    elif token.is_group():
                         table, identifier = tbl_identifier(token.tokens)
                     elif 'JOIN' in token.value:
                         how = token.value.split()[0].lower()
@@ -347,7 +347,7 @@ class SQLParser(object):
                     elif is_comparison(token):
                         left_on = col_identifier(token.tokens[0])[0]
                         right_on = col_identifier(token.tokens[-1])[0]
-                    elif token.is_group:
+                    elif token.is_group():
                         right, right_identifier = tbl_identifier(token.tokens)
                 joins.append((right, how, left_on, right_on, right_identifier))
 
@@ -360,13 +360,13 @@ class SQLParser(object):
 
             def parse_group(tkns):
                 for tkn in tkns:
-                    if tkn.is_group:
+                    if tkn.is_group():
                         group_by = zip(*identifier_list(tkn))[0]
                 return group_by
 
             def parse_order(tkns):
                 for token in tkns:
-                    if token.is_group:
+                    if token.is_group():
                         identifiers = identifier_list(token)
                 return identifiers
 

@@ -1,5 +1,5 @@
 import pandas as pd
-from .sqlparser import SQLParser
+from. sqlparser import SQLParser
 
 
 class PandasCursor (object):

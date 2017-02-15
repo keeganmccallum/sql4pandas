@@ -960,46 +960,46 @@ class SQLiteParser ( Parser ):
 
     sharedContextCache = PredictionContextCache()
 
-    literalNames = [ u"<INVALID>", u"';'", u"'.'", u"'('", u"')'", u"','", 
-                     u"'='", u"'*'", u"'+'", u"'-'", u"'~'", u"'||'", u"'/'", 
-                     u"'%'", u"'<<'", u"'>>'", u"'&'", u"'|'", u"'<'", u"'<='", 
+    literalNames = [ u"<INVALID>", u"';'", u"'.'", u"'('", u"')'", u"','",
+                     u"'='", u"'*'", u"'+'", u"'-'", u"'~'", u"'||'", u"'/'",
+                     u"'%'", u"'<<'", u"'>>'", u"'&'", u"'|'", u"'<'", u"'<='",
                      u"'>'", u"'>='", u"'=='", u"'!='", u"'<>'" ]
 
-    symbolicNames = [ u"<INVALID>", u"SCOL", u"DOT", u"OPEN_PAR", u"CLOSE_PAR", 
-                      u"COMMA", u"ASSIGN", u"STAR", u"PLUS", u"MINUS", u"TILDE", 
-                      u"PIPE2", u"DIV", u"MOD", u"LT2", u"GT2", u"AMP", 
-                      u"PIPE", u"LT", u"LT_EQ", u"GT", u"GT_EQ", u"EQ", 
-                      u"NOT_EQ1", u"NOT_EQ2", u"K_ABORT", u"K_ACTION", u"K_ADD", 
-                      u"K_AFTER", u"K_ALL", u"K_ALTER", u"K_ANALYZE", u"K_AND", 
-                      u"K_AS", u"K_ASC", u"K_ATTACH", u"K_AUTOINCREMENT", 
-                      u"K_BEFORE", u"K_BEGIN", u"K_BETWEEN", u"K_BY", u"K_CASCADE", 
-                      u"K_CASE", u"K_CAST", u"K_CHECK", u"K_COLLATE", u"K_COLUMN", 
-                      u"K_COMMIT", u"K_CONFLICT", u"K_CONSTRAINT", u"K_CREATE", 
-                      u"K_CROSS", u"K_CURRENT_DATE", u"K_CURRENT_TIME", 
-                      u"K_CURRENT_TIMESTAMP", u"K_DATABASE", u"K_DEFAULT", 
-                      u"K_DEFERRABLE", u"K_DEFERRED", u"K_DELETE", u"K_DESC", 
-                      u"K_DETACH", u"K_DISTINCT", u"K_DROP", u"K_EACH", 
-                      u"K_ELSE", u"K_END", u"K_ESCAPE", u"K_EXCEPT", u"K_EXCLUSIVE", 
-                      u"K_EXISTS", u"K_EXPLAIN", u"K_FAIL", u"K_FOR", u"K_FOREIGN", 
-                      u"K_FROM", u"K_FULL", u"K_GLOB", u"K_GROUP", u"K_HAVING", 
-                      u"K_IF", u"K_IGNORE", u"K_IMMEDIATE", u"K_IN", u"K_INDEX", 
-                      u"K_INDEXED", u"K_INITIALLY", u"K_INNER", u"K_INSERT", 
-                      u"K_INSTEAD", u"K_INTERSECT", u"K_INTO", u"K_IS", 
-                      u"K_ISNULL", u"K_JOIN", u"K_KEY", u"K_LEFT", u"K_LIKE", 
-                      u"K_LIMIT", u"K_MATCH", u"K_NATURAL", u"K_NO", u"K_NOT", 
-                      u"K_NOTNULL", u"K_NULL", u"K_OF", u"K_OFFSET", u"K_ON", 
-                      u"K_OR", u"K_ORDER", u"K_OUTER", u"K_PLAN", u"K_PRAGMA", 
-                      u"K_PRIMARY", u"K_QUERY", u"K_RAISE", u"K_RECURSIVE", 
-                      u"K_REFERENCES", u"K_REGEXP", u"K_REINDEX", u"K_RELEASE", 
-                      u"K_RENAME", u"K_REPLACE", u"K_RESTRICT", u"K_RIGHT", 
-                      u"K_ROLLBACK", u"K_ROW", u"K_SAVEPOINT", u"K_SELECT", 
-                      u"K_SET", u"K_TABLE", u"K_TEMP", u"K_TEMPORARY", u"K_THEN", 
-                      u"K_TO", u"K_TRANSACTION", u"K_TRIGGER", u"K_UNION", 
-                      u"K_UNIQUE", u"K_UPDATE", u"K_USING", u"K_VACUUM", 
-                      u"K_VALUES", u"K_VIEW", u"K_VIRTUAL", u"K_WHEN", u"K_WHERE", 
-                      u"K_WITH", u"K_WITHOUT", u"IDENTIFIER", u"NUMERIC_LITERAL", 
-                      u"BIND_PARAMETER", u"STRING_LITERAL", u"BLOB_LITERAL", 
-                      u"SINGLE_LINE_COMMENT", u"MULTILINE_COMMENT", u"SPACES", 
+    symbolicNames = [ u"<INVALID>", u"SCOL", u"DOT", u"OPEN_PAR", u"CLOSE_PAR",
+                      u"COMMA", u"ASSIGN", u"STAR", u"PLUS", u"MINUS", u"TILDE",
+                      u"PIPE2", u"DIV", u"MOD", u"LT2", u"GT2", u"AMP",
+                      u"PIPE", u"LT", u"LT_EQ", u"GT", u"GT_EQ", u"EQ",
+                      u"NOT_EQ1", u"NOT_EQ2", u"K_ABORT", u"K_ACTION", u"K_ADD",
+                      u"K_AFTER", u"K_ALL", u"K_ALTER", u"K_ANALYZE", u"K_AND",
+                      u"K_AS", u"K_ASC", u"K_ATTACH", u"K_AUTOINCREMENT",
+                      u"K_BEFORE", u"K_BEGIN", u"K_BETWEEN", u"K_BY", u"K_CASCADE",
+                      u"K_CASE", u"K_CAST", u"K_CHECK", u"K_COLLATE", u"K_COLUMN",
+                      u"K_COMMIT", u"K_CONFLICT", u"K_CONSTRAINT", u"K_CREATE",
+                      u"K_CROSS", u"K_CURRENT_DATE", u"K_CURRENT_TIME",
+                      u"K_CURRENT_TIMESTAMP", u"K_DATABASE", u"K_DEFAULT",
+                      u"K_DEFERRABLE", u"K_DEFERRED", u"K_DELETE", u"K_DESC",
+                      u"K_DETACH", u"K_DISTINCT", u"K_DROP", u"K_EACH",
+                      u"K_ELSE", u"K_END", u"K_ESCAPE", u"K_EXCEPT", u"K_EXCLUSIVE",
+                      u"K_EXISTS", u"K_EXPLAIN", u"K_FAIL", u"K_FOR", u"K_FOREIGN",
+                      u"K_FROM", u"K_FULL", u"K_GLOB", u"K_GROUP", u"K_HAVING",
+                      u"K_IF", u"K_IGNORE", u"K_IMMEDIATE", u"K_IN", u"K_INDEX",
+                      u"K_INDEXED", u"K_INITIALLY", u"K_INNER", u"K_INSERT",
+                      u"K_INSTEAD", u"K_INTERSECT", u"K_INTO", u"K_IS",
+                      u"K_ISNULL", u"K_JOIN", u"K_KEY", u"K_LEFT", u"K_LIKE",
+                      u"K_LIMIT", u"K_MATCH", u"K_NATURAL", u"K_NO", u"K_NOT",
+                      u"K_NOTNULL", u"K_NULL", u"K_OF", u"K_OFFSET", u"K_ON",
+                      u"K_OR", u"K_ORDER", u"K_OUTER", u"K_PLAN", u"K_PRAGMA",
+                      u"K_PRIMARY", u"K_QUERY", u"K_RAISE", u"K_RECURSIVE",
+                      u"K_REFERENCES", u"K_REGEXP", u"K_REINDEX", u"K_RELEASE",
+                      u"K_RENAME", u"K_REPLACE", u"K_RESTRICT", u"K_RIGHT",
+                      u"K_ROLLBACK", u"K_ROW", u"K_SAVEPOINT", u"K_SELECT",
+                      u"K_SET", u"K_TABLE", u"K_TEMP", u"K_TEMPORARY", u"K_THEN",
+                      u"K_TO", u"K_TRANSACTION", u"K_TRIGGER", u"K_UNION",
+                      u"K_UNIQUE", u"K_UPDATE", u"K_USING", u"K_VACUUM",
+                      u"K_VALUES", u"K_VIEW", u"K_VIRTUAL", u"K_WHEN", u"K_WHERE",
+                      u"K_WITH", u"K_WITHOUT", u"IDENTIFIER", u"NUMERIC_LITERAL",
+                      u"BIND_PARAMETER", u"STRING_LITERAL", u"BLOB_LITERAL",
+                      u"SINGLE_LINE_COMMENT", u"MULTILINE_COMMENT", u"SPACES",
                       u"UNEXPECTED_CHAR" ]
 
     RULE_parse = 0
@@ -1085,30 +1085,30 @@ class SQLiteParser ( Parser ):
     RULE_transaction_name = 80
     RULE_any_name = 81
 
-    ruleNames =  [ u"parse", u"error", u"sql_stmt_list", u"sql_stmt", u"alter_table_stmt", 
-                   u"analyze_stmt", u"attach_stmt", u"begin_stmt", u"commit_stmt", 
-                   u"compound_select_stmt", u"create_index_stmt", u"create_table_stmt", 
-                   u"create_trigger_stmt", u"create_view_stmt", u"create_virtual_table_stmt", 
-                   u"delete_stmt", u"delete_stmt_limited", u"detach_stmt", 
-                   u"drop_index_stmt", u"drop_table_stmt", u"drop_trigger_stmt", 
-                   u"drop_view_stmt", u"factored_select_stmt", u"insert_stmt", 
-                   u"pragma_stmt", u"reindex_stmt", u"release_stmt", u"rollback_stmt", 
-                   u"savepoint_stmt", u"simple_select_stmt", u"select_stmt", 
-                   u"select_or_values", u"update_stmt", u"update_stmt_limited", 
-                   u"vacuum_stmt", u"column_def", u"type_name", u"column_constraint", 
-                   u"conflict_clause", u"expr", u"foreign_key_clause", u"raise_function", 
-                   u"indexed_column", u"table_constraint", u"with_clause", 
-                   u"qualified_table_name", u"ordering_term", u"pragma_value", 
-                   u"common_table_expression", u"result_column", u"table_or_subquery", 
-                   u"join_clause", u"join_operator", u"join_constraint", 
-                   u"select_core", u"compound_operator", u"cte_table_name", 
-                   u"signed_number", u"literal_value", u"unary_operator", 
-                   u"error_message", u"module_argument", u"column_alias", 
-                   u"keyword", u"name", u"function_name", u"database_name", 
-                   u"table_name", u"table_or_index_name", u"new_table_name", 
-                   u"column_name", u"collation_name", u"foreign_table", 
-                   u"index_name", u"trigger_name", u"view_name", u"module_name", 
-                   u"pragma_name", u"savepoint_name", u"table_alias", u"transaction_name", 
+    ruleNames =  [ u"parse", u"error", u"sql_stmt_list", u"sql_stmt", u"alter_table_stmt",
+                   u"analyze_stmt", u"attach_stmt", u"begin_stmt", u"commit_stmt",
+                   u"compound_select_stmt", u"create_index_stmt", u"create_table_stmt",
+                   u"create_trigger_stmt", u"create_view_stmt", u"create_virtual_table_stmt",
+                   u"delete_stmt", u"delete_stmt_limited", u"detach_stmt",
+                   u"drop_index_stmt", u"drop_table_stmt", u"drop_trigger_stmt",
+                   u"drop_view_stmt", u"factored_select_stmt", u"insert_stmt",
+                   u"pragma_stmt", u"reindex_stmt", u"release_stmt", u"rollback_stmt",
+                   u"savepoint_stmt", u"simple_select_stmt", u"select_stmt",
+                   u"select_or_values", u"update_stmt", u"update_stmt_limited",
+                   u"vacuum_stmt", u"column_def", u"type_name", u"column_constraint",
+                   u"conflict_clause", u"expr", u"foreign_key_clause", u"raise_function",
+                   u"indexed_column", u"table_constraint", u"with_clause",
+                   u"qualified_table_name", u"ordering_term", u"pragma_value",
+                   u"common_table_expression", u"result_column", u"table_or_subquery",
+                   u"join_clause", u"join_operator", u"join_constraint",
+                   u"select_core", u"compound_operator", u"cte_table_name",
+                   u"signed_number", u"literal_value", u"unary_operator",
+                   u"error_message", u"module_argument", u"column_alias",
+                   u"keyword", u"name", u"function_name", u"database_name",
+                   u"table_name", u"table_or_index_name", u"new_table_name",
+                   u"column_name", u"collation_name", u"foreign_table",
+                   u"index_name", u"trigger_name", u"view_name", u"module_name",
+                   u"pragma_name", u"savepoint_name", u"table_alias", u"transaction_name",
                    u"any_name" ]
 
     EOF = Token.EOF
@@ -1385,9 +1385,8 @@ class SQLiteParser ( Parser ):
             self.enterOuterAlt(localctx, 1)
             self.state = 173
             localctx._UNEXPECTED_CHAR = self.match(SQLiteParser.UNEXPECTED_CHAR)
-             
-                 throw new RuntimeException("UNEXPECTED_CHAR=" + (None if localctx._UNEXPECTED_CHAR is None else localctx._UNEXPECTED_CHAR.text)); 
-               
+            raise RuntimeException("UNEXPECTED_CHAR=" + (None if localctx._UNEXPECTED_CHAR is None else localctx._UNEXPECTED_CHAR.text));
+
         except RecognitionException as re:
             localctx.exception = re
             self._errHandler.reportError(self, re)
@@ -1447,20 +1446,20 @@ class SQLiteParser ( Parser ):
             _alt = self._interp.adaptivePredict(self._input,4,self._ctx)
             while _alt!=2 and _alt!=ATN.INVALID_ALT_NUMBER:
                 if _alt==1:
-                    self.state = 184 
+                    self.state = 184
                     self._errHandler.sync(self)
                     _la = self._input.LA(1)
                     while True:
                         self.state = 183
                         self.match(SQLiteParser.SCOL)
-                        self.state = 186 
+                        self.state = 186
                         self._errHandler.sync(self)
                         _la = self._input.LA(1)
                         if not (_la==SQLiteParser.SCOL):
                             break
 
                     self.state = 188
-                    self.sql_stmt() 
+                    self.sql_stmt()
                 self.state = 193
                 self._errHandler.sync(self)
                 _alt = self._interp.adaptivePredict(self._input,4,self._ctx)
@@ -1471,7 +1470,7 @@ class SQLiteParser ( Parser ):
             while _alt!=2 and _alt!=ATN.INVALID_ALT_NUMBER:
                 if _alt==1:
                     self.state = 194
-                    self.match(SQLiteParser.SCOL) 
+                    self.match(SQLiteParser.SCOL)
                 self.state = 199
                 self._errHandler.sync(self)
                 _alt = self._interp.adaptivePredict(self._input,5,self._ctx)
@@ -2342,7 +2341,7 @@ class SQLiteParser ( Parser ):
 
             self.state = 305
             self.select_core()
-            self.state = 315 
+            self.state = 315
             self._errHandler.sync(self)
             _la = self._input.LA(1)
             while True:
@@ -2372,7 +2371,7 @@ class SQLiteParser ( Parser ):
 
                 self.state = 314
                 self.select_core()
-                self.state = 317 
+                self.state = 317
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
                 if not (_la==SQLiteParser.K_EXCEPT or _la==SQLiteParser.K_INTERSECT or _la==SQLiteParser.K_UNION):
@@ -2716,7 +2715,7 @@ class SQLiteParser ( Parser ):
                         self.state = 389
                         self.match(SQLiteParser.COMMA)
                         self.state = 390
-                        self.column_def() 
+                        self.column_def()
                     self.state = 395
                     self._errHandler.sync(self)
                     _alt = self._interp.adaptivePredict(self._input,37,self._ctx)
@@ -3042,7 +3041,7 @@ class SQLiteParser ( Parser ):
 
             self.state = 466
             self.match(SQLiteParser.K_BEGIN)
-            self.state = 475 
+            self.state = 475
             self._errHandler.sync(self)
             _la = self._input.LA(1)
             while True:
@@ -3072,7 +3071,7 @@ class SQLiteParser ( Parser ):
 
                 self.state = 473
                 self.match(SQLiteParser.SCOL)
-                self.state = 477 
+                self.state = 477
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
                 if not (_la==SQLiteParser.K_DELETE or ((((_la - 88)) & ~0x3f) == 0 and ((1 << (_la - 88)) & ((1 << (SQLiteParser.K_INSERT - 88)) | (1 << (SQLiteParser.K_REPLACE - 88)) | (1 << (SQLiteParser.K_SELECT - 88)) | (1 << (SQLiteParser.K_UPDATE - 88)) | (1 << (SQLiteParser.K_VALUES - 88)) | (1 << (SQLiteParser.K_WITH - 88)))) != 0)):
@@ -5850,7 +5849,7 @@ class SQLiteParser ( Parser ):
         self.enterRule(localctx, 72, self.RULE_type_name)
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 1053 
+            self.state = 1053
             self._errHandler.sync(self)
             _alt = 1
             while _alt!=2 and _alt!=ATN.INVALID_ALT_NUMBER:
@@ -5860,7 +5859,7 @@ class SQLiteParser ( Parser ):
 
                 else:
                     raise NoViableAltException(self)
-                self.state = 1055 
+                self.state = 1055
                 self._errHandler.sync(self)
                 _alt = self._interp.adaptivePredict(self._input,146,self._ctx)
 
@@ -6475,7 +6474,7 @@ class SQLiteParser ( Parser ):
                     self.expr(0)
 
 
-                self.state = 1178 
+                self.state = 1178
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
                 while True:
@@ -6487,7 +6486,7 @@ class SQLiteParser ( Parser ):
                     self.match(SQLiteParser.K_THEN)
                     self.state = 1176
                     self.expr(0)
-                    self.state = 1180 
+                    self.state = 1180
                     self._errHandler.sync(self)
                     _la = self._input.LA(1)
                     if not (_la==SQLiteParser.K_WHEN):
@@ -6891,7 +6890,7 @@ class SQLiteParser ( Parser ):
 
                         pass
 
-             
+
                 self.state = 1293
                 self._errHandler.sync(self)
                 _alt = self._interp.adaptivePredict(self._input,178,self._ctx)
@@ -10334,59 +10333,59 @@ class SQLiteParser ( Parser ):
     def expr_sempred(self, localctx, predIndex):
             if predIndex == 0:
                 return self.precpred(self._ctx, 20)
-         
+
 
             if predIndex == 1:
                 return self.precpred(self._ctx, 19)
-         
+
 
             if predIndex == 2:
                 return self.precpred(self._ctx, 18)
-         
+
 
             if predIndex == 3:
                 return self.precpred(self._ctx, 17)
-         
+
 
             if predIndex == 4:
                 return self.precpred(self._ctx, 16)
-         
+
 
             if predIndex == 5:
                 return self.precpred(self._ctx, 15)
-         
+
 
             if predIndex == 6:
                 return self.precpred(self._ctx, 14)
-         
+
 
             if predIndex == 7:
                 return self.precpred(self._ctx, 13)
-         
+
 
             if predIndex == 8:
                 return self.precpred(self._ctx, 6)
-         
+
 
             if predIndex == 9:
                 return self.precpred(self._ctx, 5)
-         
+
 
             if predIndex == 10:
                 return self.precpred(self._ctx, 9)
-         
+
 
             if predIndex == 11:
                 return self.precpred(self._ctx, 8)
-         
+
 
             if predIndex == 12:
                 return self.precpred(self._ctx, 7)
-         
+
 
             if predIndex == 13:
                 return self.precpred(self._ctx, 4)
-         
+
 
 
 
